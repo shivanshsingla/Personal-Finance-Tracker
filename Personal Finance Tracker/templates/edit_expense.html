@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Expense</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Edit Expense</h2>
+
+        <form method="POST">
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select name="category" id="category" class="form-control" required>
+                    {% for category, icon in CATEGORIES.items() %}
+                        <option value="{{ category }}" {% if expense.category == category %}selected{% endif %}>
+                            {{ icon }} {{ category }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount</label>
+                <input type="number" name="amount" id="amount" class="form-control" required step="0.01"
+                       value="{{ expense.amount }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="date" class="form-label">Date</label>
+                <input type="date" name="date" id="date" class="form-control" required
+                    value="{{ expense.date.strftime('%Y-%m-%d') }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input type="text" name="description" id="description" class="form-control"
+                    value="{{ expense.description }}">
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Update Expense</button>
+        </form>
+
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SaveSmart</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Chart.js for Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<style>
+    .navbar {
+    background-color: #e1a50e ;
+    min-height: 70px;
+    margin-bottom: 30px;
+    }
+    .navbar a {
+    font-size: 1.4rem; /* Adjust as needed */
+    font-weight: bold; /* Makes text more prominent */
+}
+body {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+body.loaded {
+    opacity: 1;
+}
+</style>
+<body>
+
+    <!-- 🔹 Navbar -->
+    <!-- <nav class="navbar navbar-expand-lg navbar-light bg-#e1a50e"> -->
+    <nav class="navbar navbar-expand-lg" style="background-color: #e1a50e; font-size: 1.4rem;font-weight: bold;">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('home') }}"><h3>SaveSmart</h3></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{{ url_for('dashboard') }}">Dashboard&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('add_expense') }}">Add Expense</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 🔹 Main Content -->
+    <div class="container mt-6">
+        <h1 class="text-center">Your Financial Overview</h1>
+
+        <!-- 🔹 Expense Summary -->
+        <div class="row my-4 text-center">
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <h5>Total Expenses</h5>
+                    <p class="fs-4 text-danger">${{ "%.2f"|format(total_expense or 0) }}</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm">
+                    <h5>Top Spending Category</h5>
+                    <p class="fs-4 text-primary">{{ top_category or "NA" }}</p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 🔹 Filter & Search Form -->
+        <!-- <form method="GET" action="{{ url_for('dashboard') }}" class="row mb-4" >
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="Search by category or description" value="{{ search_term or '' }}">
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="start_date" class="form-control" value="{{ start_date or '' }}">
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="end_date" class="form-control" value="{{ end_date or '' }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form> -->
+
+        <div class="card p-4 shadow-sm rounded-3 mb-4">
+            <form method="GET" action="{{ url_for('dashboard') }}" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control py-2 px-3" 
+                        placeholder="Search by category or description" value="{{ search_term or '' }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="start_date" class="form-control py-2 px-3" value="{{ start_date or '' }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="end_date" class="form-control py-2 px-3" value="{{ end_date or '' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 py-2">Filter</button>
+                </div>
+            </form>
+        </div>
+
+        
+
+        <!-- 🔹 Expenses Table -->
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <a href="{{ url_for('add_expense') }}" class="btn btn-success mb-3">+ Add Expense</a>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for expense in expenses %}
+                        <tr>
+                            <td>{{ CATEGORIES.get(expense.category, "❓") }} {{ expense.category }}</td>
+                            <td>${{ "%.2f"|format(expense.amount) }}</td>
+                            <td>{{ expense.date.strftime("%Y-%m-%d") }}</td>
+                            <td>{{ expense.description }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_expense', expense_id=expense.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <button class="btn btn-danger btn-sm delete-btn" data-id="{{ expense.id }}">
+                                    Delete
+                                </button>
+                                
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+
+
+        
+        <script>
+            document.querySelectorAll(".delete-btn").forEach(button => {
+                button.addEventListener("click", function() {
+                    let expenseId = this.getAttribute("data-id");
+            
+                    if (!confirm("Are you sure you want to delete this expense?")) {
+                        return;  // Stop execution if the user cancels
+                    }
+            
+                    fetch(`/delete_expense/${expenseId}`, { method: "POST" })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            let row = this.closest("tr");
+                            if (row) {
+                                row.remove(); // ✅ Remove the row from the table
+                            }
+                        } else {
+                            alert("Error deleting expense: " + data.error);
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+                });
+            });
+            </script>
+
+        <!-- 🔹 Charts Section -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm p-3">
+                    <h5 class="text-center">Expenses by Category</h5>
+                    <canvas id="expensePieChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm p-3">
+                    <h5 class="text-center">Expense Trends Over Time</h5>
+                    <canvas id="expenseLineChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 Footer -->
+    <footer class="bg-light text-center mt-5 py-3">
+        <div class="container">
+            <p>&copy; 2025 SaveSmart. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 🔹 Chart.js Script -->
+    <script>
+        function createChart(elementId, chartType, chartData) {
+            var chartElement = document.getElementById(elementId);
+            if (chartElement) {
+                new Chart(chartElement, { type: chartType, data: chartData });
+            } else {
+                console.error("Chart element not found:", elementId);
+            }
+        }
+        
+        var expenseChartData = {
+            labels: {{ expense_labels | tojson }},
+            datasets: [{
+                data: {{ expense_values | tojson }},
+                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"]
+            }]
+        };
+
+        var expenseTrendData = {
+            labels: {{ expense_dates | tojson }},
+            datasets: [{
+                label: "Expenses Over Time",
+                data: {{ expense_amounts | tojson }},
+                borderColor: "#FF6384",
+                fill: false
+            }]
+        };
+
+        createChart("expensePieChart", "pie", expenseChartData);
+        createChart("expenseLineChart", "line", expenseTrendData);
+    </script>
+
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.body.classList.add("loaded");
+    });
+</script>
+
+</html>

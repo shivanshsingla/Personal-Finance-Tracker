@@ -1,0 +1,157 @@
+<!-- <!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<style>
+    .container {
+            display: flex;
+            height: 100vh; /* Full screen height */
+            width: 100%; /* Full width */
+    }
+    .right {
+    width: 60%;
+    background: url('https://i.pinimg.com/originals/3e/bc/0c/3ebc0c47a6bc95f0176ef1079db12248.jpg');
+    background-size: cover;
+    }
+    .left {
+            width: 40%;
+            background-color: #FBE7AA; /* Light Yellow */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+    }
+</style>-->
+<!-- <body class="d-flex justify-content-center align-items-center vh-100"> -->
+<!--<body>
+    <div class="container">
+    <div class="left">
+    <div class="login-container p-4 rounded shadow-lg">
+        <h2 class="text-center mb-3">Login</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+    </div>
+    </div>
+    <div class="right">
+
+    </div>
+    </div>
+</body>
+</html>
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        /* Remove default body margin */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Full height & width */
+        .container-fluid {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            padding: 0; /* Removes Bootstrap default padding */
+        }
+
+        /* Left Section */
+        .left {
+            width: 50%;
+            background-color: #FBE7AA; /* Light Yellow */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Right Section - Background Image */
+        .right {
+            width: 50%;
+            background: url('https://i.pinimg.com/originals/3e/bc/0c/3ebc0c47a6bc95f0176ef1079db12248.jpg') no-repeat center center;
+            background-size: cover;
+            height: 100vh;
+        }
+
+       
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <!-- Left Side -->
+        <div class="left">
+            <div class="login-container p-4 rounded shadow-lg">
+                <h2 class="text-center mb-3">Login</h2>
+
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" name="username" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Side (Image Background) -->
+        <div class="right"></div>
+    </div>
+
+</body>
+</html>

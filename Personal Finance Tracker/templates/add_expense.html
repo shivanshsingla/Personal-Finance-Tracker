@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<style>
+        body {
+    background-color: #ffecb5;
+    font-family: Copperplate, Papyrus, fantasy;
+    font-size: 24px;
+    margin-right: 20px;
+}
+    .navbar {
+    background-color: #e1a50e ;
+    min-height: 70px;
+    margin-bottom: 50px;
+    }
+    .navbar a {
+    font-size: 1.4rem; /* Adjust as needed */
+    font-weight: bold; /* Makes text more prominent */
+}
+body {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+body.loaded {
+    opacity: 1;
+}
+</style>
+<body>
+
+    <!-- 🔹 Navbar -->
+    <!-- <nav class="navbar navbar-expand-lg navbar-light bg-#e1a50e"> -->
+        <nav class="navbar navbar-expand-lg" style="background-color: #e1a50e; font-size: 1.4rem;font-weight: bold;">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="{{ url_for('home') }}"><h3>SaveSmart</h3></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{{ url_for('dashboard') }}">Dashboard&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('add_expense') }}">Add Expense</a></li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    
+
+    <div class="container mt-4">
+        <h2 class="text-center">Add Expense</h2>
+
+        <div id="alert-message" class="alert alert-success d-none" role="alert">
+            Expense added successfully!
+        </div>
+
+        <form id="expense-form" method="POST" action="{{ url_for('add_expense') }}">
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select name="category" id="category" class="form-control" required>
+                    {% for category, icon in CATEGORIES.items() %}
+                        <option value="{{ category }}">{{ icon }} {{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount ($)</label>
+                <input type="number" name="amount" id="amount" class="form-control" required step="0.01" min="0.01">
+            </div>
+
+            <div class="mb-3">
+                <label for="date" class="form-label">Date</label>
+                <input type="date" name="date" id="date" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input type="text" name="description" id="description" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Add Expense</button>
+        </form>
+
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+    </div>
+
+    <script>
+        // Set today's date as default
+        document.getElementById("date").valueAsDate = new Date();
+
+        // Handle form submission with AJAX
+        document.getElementById("expense-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent page reload
+
+            var formData = new FormData(this);
+
+            fetch("{{ url_for('add_expense') }}", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())  // Expecting JSON response
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("alert-message").classList.remove("d-none");  // Show success message
+                    this.reset();  // Clear form
+                    document.getElementById("date").valueAsDate = new Date();  // Reset date
+                    document.dispatchEvent(new Event("expenseAdded"));  // ✅ Update pie chart
+                } else {
+                    alert("Error adding expense: " + data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.body.classList.add("loaded");
+    });
+</script>
+
+</html>
+
